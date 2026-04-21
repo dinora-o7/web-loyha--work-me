@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>3D Neon Heart</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: black;
+    }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+
+<script>
+let scene = new THREE.Scene();
+scene.background = new THREE.Color("black");
+
+let camera = new THREE.PerspectiveCamera(
+  75,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  1000
+);
+
+let renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+// 💡 Light (neon effect uchun)
+let light = new THREE.PointLight(0xff2bd6, 2);
+light.position.set(5, 5, 5);
+scene.add(light);
+
+scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+
+// ❤️ REAL HEART SHAPE (to‘g‘ri emoji-like)
+function createHeartShape() {
+  let shape = new THREE.Shape();
+
+  shape.moveTo(0, 0);
+
+  shape.bezierCurveTo(0, 3, -4, 3, -4, 0);
+  shape.bezierCurveTo(-4, -4, 0, -6, 0, -8);
+  shape.bezierCurveTo(0, -6, 4, -4, 4, 0);
+  shape.bezierCurveTo(4, 3, 0, 3, 0, 0);
+
+  return shape;
+}
+
+let geometry = new THREE.ExtrudeGeometry(createHeartShape(), {
+  depth: 2,
+  bevelEnabled: true,
+  bevelThickness: 0.5,
+  bevelSize: 0.5,
+  bevelSegments: 10
+});
+
+// 💜 material (neon glow feel)
+let material = new THREE.MeshStandardMaterial({
+  color: 0xff2bd6,
+  emissive: 0xff0077,
+  emissiveIntensity: 1,
+  metalness: 0.3,
+  roughness: 0.2
+});
+
+let heart = new THREE.Mesh(geometry, material);
+scene.add(heart);
+
+camera.position.z = 12;
+
+ // 🖱 mouse control
+let mouseX = 0;
+let mouseY = 0;
+
+document.addEventListener("mousemove", (e) => {
+  mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+  mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+});
+
+// ❤️ beat effect
+let scale = 1;
+let grow = true;
+
+function animate() {
+  requestAnimationFrame(animate);
+
+  // rotation
+  heart.rotation.y += 0.01;
+  heart.rotation.x += 0.005;
+
+  //mouse follow
+  heart.rotation.y += mouseX * 0.02;
+  heart.rotation.x += mouseY * 0.02;
+
+  // ❤️ beating
+  if (grow) {
+    scale += 0.003;
+    if (scale > 1.15) grow = false;
+  } else {
+    scale -= 0.003;
+    if (scale < 1) grow = true;
+  }
+
+  heart.scale.set(scale, scale, scale);
+
+  renderer.render(scene, camera);
+}
+
+animate();
+
+// resize fix
+
+window.addEventListener("resize", () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+
+</body>
+</html>

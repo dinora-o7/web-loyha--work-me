@@ -45,7 +45,7 @@ ctx.font = "30px Arial";
 ctx.fillStyle = "#ff5fd8";
 ctx.textAlign = "center";
  
-ctx.fillText("DINORA", canvas.width/2, canvas.height/2)
+ctx.fillText("Saidxonova Dinora", canvas.width/2, canvas.height/2)
 
 
   });
